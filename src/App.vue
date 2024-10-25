@@ -1,6 +1,9 @@
 <script setup>
-// Importa a função `reactive` do Vue para criar um estado reativo
-import { reactive } from 'vue';
+    // Importa a função `reactive` do Vue para criar um estado reativo
+    import { reactive } from 'vue';
+    import Cabecalho from './components/Cabecalho.vue';
+    import Formulario from './components/Formulario.vue';
+    import ListaDeTarefas from './components/ListaDeTarefas.vue';
 
 // Criamos um objeto reativo que contém o estado da aplicação
 const estado = reactive({
@@ -26,6 +29,7 @@ const estado = reactive({
 const getTarefasPendentes = () => {
     return estado.tarefas.filter(tarefa => !tarefa.finalizada);
 }
+
 
 // Função que retorna as tarefas finalizadas
 const getTarefasFinalizadas = () => {
@@ -57,66 +61,20 @@ const cadastrarTarefas = () => {
 }
 </script>
 
+
+
 <template>
     <div class="container">
-        <!-- Cabeçalho da página -->
-        <header class="p-5 mb-4 mt-4-light rounded-3">
-            <h1>Minhas Tarefas</h1>
-            <p>
-                <!-- Mostra quantas tarefas pendentes o usuário tem -->
-                Você possui {{ getTarefasPendentes().length }} Tarefas pendentes
-            </p>
-        </header>
-
-        <!-- Formulário para cadastrar uma nova tarefa -->
-        <form @submit.prevent="cadastrarTarefas"> <!-- O evento de submit chama a função cadastrarTarefas -->
-            <div class="row">
-                <div class="col">
-                    <!-- Campo de input para digitar a descrição da tarefa -->
-                    <input 
-                        :value="estado.tarefaTemp" 
-                        @change="evento => estado.tarefaTemp = evento.target.value" 
-                        type="text" 
-                        placeholder="Digite a descrição da tarefa" 
-                        class="form-control">
-                </div>
-                <div class="col-md-2">
-                    <!-- Botão para cadastrar a tarefa -->
-                    <button type="submit" class="btn btn-primary">Cadastrar</button>
-                </div>
-                <div class="col-md-2">
-                    <!-- Select para escolher o filtro de tarefas: todas, pendentes ou finalizadas -->
-                    <select @change="evento => estado.filtro = evento.target.value" class="form-control">
-                        <option value="todas">Todas Tarefas</option>
-                        <option value="pendentes">Pendentes</option>
-                        <option value="finalizadas">Finalizadas</option>
-                    </select>
-                </div>
-            </div>
-        </form>
-
-        <!-- Lista de tarefas -->
-        <ul class="list-group mt-4">
-            <!-- Itera sobre as tarefas filtradas de acordo com o filtro selecionado -->
-            <li class="list-group-item" v-for="tarefa in getTarefasFiltradas()" :key="tarefa.titulo">
-                <!-- Checkbox para marcar a tarefa como finalizada -->
-                <input 
-                    @change="evento => tarefa.finalizada = evento.target.checked" 
-                    :checked="tarefa.finalizada" 
-                    :id="tarefa.titulo" 
-                    type="checkbox">
-                <!-- Rótulo da tarefa com uma classe condicional que risca a tarefa se ela estiver finalizada -->
-                <label :class="{ done: tarefa.finalizada }" class="ms-3" :for="tarefa.titulo">
-                    {{ tarefa.titulo }} <!-- Exibe o título da tarefa -->
-                </label>
-            </li>
-        </ul>
+        <Cabecalho :tarefas-pendentes="getTarefasPendentes().length" />
+        <Formulario 
+        :tarefa-temp="estado.tarefaTemp" 
+        :editar-tarefa-temp="evento => estado.tarefaTemp = evento.targe.value"
+        :cadastrar-tarefa="cadastrarTarefas"
+        :trocar-filtro="evento => estado.filtro = evento.target.value"
+        />
+        <ListaDeTarefas :tarefas="getTarefasFiltradas()"
+        />
     </div>
 </template>
 
-<style scoped>
-/* Estilo para riscar a tarefa finalizada */
-.done {
-    text-decoration: line-through;
-}
-</style>
+
